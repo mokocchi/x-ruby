@@ -28,7 +28,13 @@ module X
       elsif response_object.key?("error")
         response_object.fetch("error")
       elsif response_object["errors"].instance_of?(Array)
-        response_object.fetch("errors").map { |error| error.fetch("message") }.join(", ")
+        response_object.fetch("errors").map do |error|
+          if error.is_a?(Hash)
+            error["message"] || error.values.first.to_s
+          else
+            error.to_s
+          end
+        end.join(", ")
       else
         response.message
       end
